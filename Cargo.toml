@@ -8,6 +8,7 @@ description = "Better `brew update` with desc of new formulae/casks"
 license = "MIT"
 keywords = ["brew", "homebrew", "descriptions"]
 readme = "README.md"
+rust-version = "1.70.0"
 
 [badges]
 coveralls = { repository = "https://github.com/iceman/brewr", branch = "master", service = "github" }
