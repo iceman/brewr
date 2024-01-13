@@ -23,8 +23,8 @@ fn main() {
 }
 
 fn run_diagnostic() {
-    if diagnostics::command_not_in_path("brew") {
-        eprintln!("`brew` command not found. Homebrew package manager must be installed.");
-        std::process::exit(1);
-    }
+    diagnostics::error_if_not_in_path(&[
+        "brew",
+        "bash",
+    ]);
 }

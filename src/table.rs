@@ -17,7 +17,6 @@ where O: AsRef<[I]>, I: AsRef<[S]>, S: AsRef<str>,
 	let columns = columns.as_ref();
 	let row_len = columns[0].as_ref().len();
 
-	// let mut builder = Builder::new();
 	let mut builder = Builder::with_capacity(row_len, columns.len());
 	
 	for i in 0..row_len {

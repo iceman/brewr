@@ -36,7 +36,8 @@ impl Brew {
                     ("bash",  &["-c", "cat <(brew outdated -v --formulae) <(brew outdated -v --casks)"]),
                     ("sort",  &[]),
                 ]
-            ).unwrap()
+            )
+            .unwrap()
         )
     }
     
