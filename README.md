@@ -11,4 +11,13 @@ Built with Rust as a first project while I was learning it. With multi-threaded 
 
 </div>
 
-![Screenshot of brewr](https://raw.githubusercontent.com/iceman/brewr/master/screenshot2.jpg)
+![Screenshot of brewr](https://raw.githubusercontent.com/iceman/brewr/master/screenshot3.jpg)
+
+```
+Usage: brewr [OPTIONS] (no options defaults to update brew)
+
+Options:
+  -a, --all      List all installed formulae with descriptions
+  -l, --leaves   List all manually installed formulae with descriptions
+  -g, --grid     Display results with grid lines
+```
