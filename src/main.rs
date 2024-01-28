@@ -5,7 +5,7 @@
 mod diagnostics;
 mod args;
 use args::{Args, Parser};
-use brewr::config;
+use brewr::*;
 
 fn main() {
     let args = Args::parse();
@@ -14,11 +14,11 @@ fn main() {
     run_diagnostic();
     
     if args.leaves {
-        brewr::print_desc_for_leaves();
+        print_desc_for_leaves();
     } else if args.all {
-        brewr::print_desc_for_all_installed();
+        print_desc_for_all_installed();
     } else {
-        brewr::print_output_with_new_item_desc();
+        print_output_with_new_item_desc();
     }
 }
 
