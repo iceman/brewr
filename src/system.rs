@@ -29,7 +29,7 @@ pub fn pipe(cmd_args: &[(&str, &[&str])]) -> io::Result<Output> {
 	let mut child: Option<Child> = None;
 	
 	for (i, (cmd, args)) in cmd_args.iter().enumerate() {
-		let stdio = match i {
+		let stdin = match i {
 			0 => Stdio::null(),
 			_ => Stdio::from(child.unwrap().stdout.unwrap()),
 		};
@@ -37,7 +37,7 @@ pub fn pipe(cmd_args: &[(&str, &[&str])]) -> io::Result<Output> {
 		child = Some(
 			Command::new(*cmd)
 				.args(*args)
-				.stdin(stdio)
+				.stdin(stdin)
 				.stdout(Stdio::piped())
 				.spawn()?
 		);
