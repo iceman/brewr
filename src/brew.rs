@@ -66,7 +66,7 @@ impl Brew {
     pub fn cols(&self) -> (Vec<&str>, Vec<&str>) {
         self.stdout
             .lines()
-            .map(|l| l.split_once(&[' ', ':']).unwrap())
+            .map(|l| l.split_once([' ', ':']).unwrap())
             .unzip()
     }
     
