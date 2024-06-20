@@ -33,7 +33,7 @@ fn bytes_to_string(bytes: &[u8]) -> String {
 	match from_utf8(bytes) {
 		Ok(s) => String::from(s),
 		Err(e) => {
-			println!("[Error: {}]", e);
+			eprintln!("[Error: {}]", e);
 			String::new()
 		},
 	}

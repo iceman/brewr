@@ -10,7 +10,7 @@ struct Data {
 #[derive(Deserialize)]
 struct Item {
 	name: Name,
-	desc: String,
+	desc: Option<String>,
 	homepage: Option<String>,
 }
 
@@ -47,7 +47,7 @@ fn vectorize_json_data(n: usize, d: Data) -> [Vec<String>;3] {
 	for item_type in [d.formulae, d.casks] {
 		for item in item_type {
 			names.push(item.name());
-			descs.push(item.desc);
+			descs.push(item.desc.unwrap_or_default());
 			pages.push(item.homepage.unwrap_or_default());
 		}
 	}

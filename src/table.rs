@@ -1,8 +1,11 @@
 use crate::config;
 use tabled::{
 	builder::Builder,
-	settings::{Style, Padding},
-	settings::themes::Theme,
+	settings::{
+		Style,
+		Padding,
+		themes::Theme
+	},
 };
 
 /// Build a table from slice, array or vector
