@@ -38,4 +38,3 @@ fn bytes_to_string(bytes: &[u8]) -> String {
 		},
 	}
 }
-

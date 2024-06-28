@@ -6,7 +6,10 @@ use crate::system::{
     Output,
     StreamsToString,
 };
-use std::thread;
+use std::{
+    thread,
+    sync::Arc,
+};
 
 pub struct Brew {
     pub stdout: String,
@@ -35,10 +38,11 @@ impl Brew {
      /// Executes each pass in a separate thread and joins handles
     pub fn map<F>(func: F) 
     where
-        F: Fn(Style, &str) + Send + 'static + Clone,
+        F: Fn(Style, &str) + Send + 'static + Sync,
     {
+        let func = Arc::new(func);
         let handles = Style::iter().map(|style| {
-            let func = func.clone();
+            let func = Arc::clone(&func);
             thread::spawn(move || {
                 let name = style.name();
                 func(style, name);
