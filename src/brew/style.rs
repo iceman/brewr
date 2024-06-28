@@ -8,7 +8,8 @@ impl Style {
 		[
 			Style::Formulae,
 			Style::Casks,
-		].into_iter()
+		]
+		.into_iter()
 	}
 	
 	pub fn name(&self) -> &'static str {

@@ -30,6 +30,7 @@ impl Brew {
             &[&[cmd], items, &[args]].concat()
         )
     }
+    
      /// Iterates through styles yielding the Enum and Name to a passed closure
      /// Executes each pass in a separate thread and joins handles
     pub fn map<F>(func: F) 
@@ -37,12 +38,13 @@ impl Brew {
         F: Fn(Style, &str) + Send + 'static + Clone,
     {
         let handles = Style::iter().map(|style| {
-            let name = style.name();
             let func = func.clone();
             thread::spawn(move || {
+                let name = style.name();
                 func(style, name);
             })
         }).collect::<Vec<_>>();
+        
         handles.into_iter().for_each(|h| h.join().unwrap());
     }
     
