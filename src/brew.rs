@@ -1,9 +1,12 @@
 mod json;
+mod style;
+use style::Style;
 use crate::system::{
     self,
     Output,
-    StreamsToString
+    StreamsToString,
 };
+use std::thread;
 
 pub struct Brew {
     pub stdout: String,
@@ -27,6 +30,21 @@ impl Brew {
             &[&[cmd], items, &[args]].concat()
         )
     }
+     /// Iterates through styles yielding the Enum and Name to a passed closure
+     /// Executes each pass in a separate thread and joins handles
+    pub fn map<F>(func: F) 
+    where
+        F: Fn(Style, &str) + Send + 'static + Clone,
+    {
+        let handles = Style::iter().map(|style| {
+            let name = style.name();
+            let func = func.clone();
+            thread::spawn(move || {
+                func(style, name);
+            })
+        }).collect::<Vec<_>>();
+        handles.into_iter().for_each(|h| h.join().unwrap());
+    }
     
     /// Sorted list of all outdated formulae and casks
     pub fn outdated() -> Self {
@@ -41,8 +59,8 @@ impl Brew {
         )
     }
     
-    /// List of all installed formulae
-    pub fn list_with_desc(args: &[&str], item_type: &str) -> Self {
+    /// Takes brew command args to generate a list of names, outputs same w/ desc, specify --formulae or --casks
+    fn output_with_desc(args: &[&str], item_type: &str) -> Self {
         let desc_cmd = format!(r#"brew desc "${{0}}" "${{@}}" --eval-all {}"#, item_type);
         
         Self::new(
@@ -55,6 +73,16 @@ impl Brew {
             )
             .unwrap()
         )
+    }
+    
+    /// Outputs name and description for all items of style
+    pub fn list_with_desc(style: Style) -> Self {
+        Self::output_with_desc(&["list", "-1", style.option()], style.option())
+    }
+    
+    /// Outputs name and description for all leaves (formulae only)
+    pub fn leaves_with_desc() -> Self {
+        Self::output_with_desc(&["leaves"], Style::Formulae.option())
     }
     
     /// JSON Parser yielding name, description, homepage

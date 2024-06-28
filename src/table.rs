@@ -10,7 +10,8 @@ use tabled::{
 
 /// Build a table from slice, array or vector
 pub fn from_columns<O,I,S>(columns: O) -> String
-where O: AsRef<[I]>, I: AsRef<[S]>, S: AsRef<str>,
+where 
+	O: AsRef<[I]>, I: AsRef<[S]>, S: AsRef<str>,
 {
 	let style = match config::get("grid".to_string()) {
 		true => Theme::from(Style::modern()),

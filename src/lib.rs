@@ -3,35 +3,27 @@ pub mod system;
 mod table;
 mod brew;
 use brew::Brew;
-use std::thread;
+use std::{
+    thread,
+    sync::Arc,
+};
 
-const FORMULAE: &str = "--formulae";
-const CASKS:    &str = "--casks";
+const UP_TO_DATE: &str = "Already up-to-date.\n";
 
 /// - Prints new formulae, new casks, and outdated with descriptions
 pub fn print_output_with_new_item_desc() {
     let update = Brew::cmd(&["update"]);
-    let output = update.stderr(); // `brew update` outputs to stderr
-
     let outdated_handle = thread::spawn(print_outdated_with_desc);
 
-    if update.stdout.contains("Already up-to-date.\n") {
+    if update.stdout.contains(UP_TO_DATE) {
         
-        println!("Already up-to-date.\n");
+        println!("{}", UP_TO_DATE);
         
     } else {
         
-        thread::scope(|s| {
-            let formulae_handle = s.spawn(|| {
-                print_new_items(&output, FORMULAE);
-            });
-
-            let cask_handle = s.spawn(|| {
-                print_new_items(&output, CASKS);
-            });
-
-            formulae_handle.join().unwrap();
-            cask_handle.join().unwrap();
+        let output = Arc::new(update.stderr()); // `brew update` outputs to stderr
+        Brew::map(move |_, style_name| {
+            print_new_items(&output, style_name);
         });
         
     };
@@ -41,21 +33,15 @@ pub fn print_output_with_new_item_desc() {
 
 /// Lists all installed items with description
 pub fn print_desc_for_all_installed() {
-    let handles = [FORMULAE, CASKS]
-        .into_iter()
-        .map(|item_type| {
-            thread::spawn(|| {
-                println!(
-                    "==> All {}\n{}\n",
-                    item_type_display_name(item_type),
-                    table::from_columns(
-                        Brew::list_with_desc(&["list", "-1", item_type], item_type).array()
-                    )
-                );
-            })
-        })
-        .collect::<Vec<_>>();
-    handles.into_iter().for_each(|h| h.join().unwrap());
+    Brew::map(|style, style_name| {
+        println!(
+            "==> All {}\n{}\n",
+            style_name,
+            table::from_columns(
+                Brew::list_with_desc(style).array()
+            )
+        );
+    });
 }
 
 /// Lists all manually installed formulae with descriptions
@@ -63,7 +49,7 @@ pub fn print_desc_for_leaves() {
     println!(
         "==> Leaves\n{}\n",
         table::from_columns(
-            Brew::list_with_desc(&["leaves"], FORMULAE).array()
+            Brew::leaves_with_desc().array()
         )
     );
 }
@@ -88,8 +74,8 @@ fn print_outdated_with_desc() {
 }
 
 /// Prints new items if found in output
-fn print_new_items(output: &str, item_type: &str) {
-    let search_str = format!("New {}\n", item_type_display_name(item_type));
+fn print_new_items(output: &str, style: &str) {
+    let search_str = format!("New {}\n", style);
     
     if let Some(new_items) = extract_new_items(output, &search_str) {
         println!(
@@ -99,14 +85,6 @@ fn print_new_items(output: &str, item_type: &str) {
                 Brew::name_desc_homepage_array(&new_items)
             )
         );
-    }
-}
-
-fn item_type_display_name(item_type: &str) -> &str {
-    match item_type {
-        FORMULAE  => "Formulae",
-        CASKS     => "Casks",
-        _         => panic!("illegal argument: ({item_type})")
     }
 }
 
