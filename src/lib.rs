@@ -3,10 +3,7 @@ pub mod system;
 mod table;
 mod brew;
 use brew::Brew;
-use std::{
-    thread,
-    sync::Arc,
-};
+use std::thread;
 
 const UP_TO_DATE: &str = "Already up-to-date.\n";
 
@@ -21,7 +18,7 @@ pub fn print_output_with_new_item_desc() {
         
     } else {
         
-        let output = Arc::new(update.stderr()); // `brew update` outputs to stderr
+        let output = update.stderr(); // `brew update` outputs to stderr
         Brew::map(move |_, style_name| {
             print_new_items(&output, style_name);
         });
