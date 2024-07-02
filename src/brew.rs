@@ -105,8 +105,7 @@ impl Brew {
     }
     
     pub fn array(&self) -> [Vec<&str>;2] {
-        let (l, r) = self.cols();
-        [l,r]
+        self.cols().into()
     }
     
     pub fn stderr(&self) -> String {
