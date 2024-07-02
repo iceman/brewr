@@ -46,12 +46,10 @@ impl Brew {
 	/// Sorted list of all outdated formulae and casks
 	pub fn outdated() -> Self {
 		Self::new(
-			system::pipe(
-				&[
+			system::pipe(&[
 					("bash",  &["-c", "cat <(brew outdated -v --formulae) <(brew outdated -v --casks)"]),
 					("sort",  &[]),
-				]
-			)
+			])
 			.unwrap()
 		)
 	}
@@ -61,13 +59,11 @@ impl Brew {
 		let desc_cmd = format!(r#"brew desc "${{0}}" "${{@}}" --eval-all {}"#, item_type);
 		
 		Self::new(
-			system::pipe(
-				&[
+			system::pipe(&[
 					("brew",  args),
 					("tr", 	  &["\n", " "]),
 					("xargs", &["bash", "-c", &desc_cmd]),
-				]
-			)
+			])
 			.unwrap()
 		)
 	}

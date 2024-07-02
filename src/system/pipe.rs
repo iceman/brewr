@@ -7,13 +7,11 @@ use super::*;
 /// ```
 /// use brewr::system::pipe;
 ///
-/// pipe(
-///     &[
-///         ("brew",  &["list", "-1", "--casks"]),
-///         ("tr",    &["\n", " "]),
-///         ("xargs", &["bash", "-c", r#"brew desc "${0}" "${@}" --eval-all --casks"#]),
-///     ]
-/// );
+/// pipe(&[
+/// 	("brew",  &["list", "-1", "--casks"]),
+/// 	("tr",    &["\n", " "]),
+/// 	("xargs", &["bash", "-c", r#"brew desc "${0}" "${@}" --eval-all --casks"#]),
+/// ]);
 /// ```
 pub fn pipe(cmd_args: &[(&str, &[&str])]) -> io::Result<Output> {
 
