@@ -1,5 +1,5 @@
-pub use std::process::{Command, Output, Stdio, Child};
 use std::io;
+pub use std::process::{Child, Command, Output, Stdio};
 use std::str::from_utf8;
 
 // Commands
@@ -8,9 +8,7 @@ pub use pipe::pipe;
 
 /// Generic system command
 pub fn execute(cmd: &str, args: &[&str]) -> io::Result<Output> {
-	Command::new(cmd)
-		.args(args)
-		.output()
+	Command::new(cmd).args(args).output()
 }
 
 /// Default Output methods to convert Std Streams to String
@@ -23,7 +21,7 @@ impl StreamsToString for Output {
 	fn stdout_string(&self) -> String {
 		bytes_to_string(&self.stdout)
 	}
-	
+
 	fn stderr_string(&self) -> String {
 		bytes_to_string(&self.stderr)
 	}
@@ -35,6 +33,6 @@ fn bytes_to_string(bytes: &[u8]) -> String {
 		Err(e) => {
 			eprintln!("[Error: {}]", e);
 			String::new()
-		},
+		}
 	}
 }

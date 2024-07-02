@@ -16,15 +16,15 @@ use super::*;
 /// );
 /// ```
 pub fn pipe(cmd_args: &[(&str, &[&str])]) -> io::Result<Output> {
-	
+
 	let mut child: Option<Child> = None;
-	
+
 	for (cmd, args) in cmd_args.iter() {
 		let stdin = match child {
 			None => Stdio::null(),
 			Some(c) => Stdio::from(c.stdout.unwrap()),
 		};
-		
+
 		child = Some(
 			Command::new(*cmd)
 				.args(*args)
@@ -33,6 +33,6 @@ pub fn pipe(cmd_args: &[(&str, &[&str])]) -> io::Result<Output> {
 				.spawn()?
 		);
 	}
-	
+
 	child.unwrap().wait_with_output()
 }
