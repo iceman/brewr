@@ -1,4 +1,4 @@
-use super::Brew;
+use crate::brew::cmd_with_items;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -59,10 +59,6 @@ fn vectorize_json_data(n: usize, d: Data) -> [Vec<String>; 3] {
 }
 
 fn data_model_from_u8(items: &[&str]) -> serde_json::Result<Data> {
-	let bytes = json(items).output.stdout;
+	let bytes = cmd_with_items("info", items, "--json=v2").output.stdout;
 	serde_json::from_slice(&bytes)
-}
-
-fn json(items: &[&str]) -> Brew {
-	Brew::cmd_with_items("info", items, "--json=v2")
 }

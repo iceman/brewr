@@ -5,20 +5,20 @@ pub enum Style {
 
 impl Style {
 	pub fn iter() -> impl Iterator<Item = Style> {
-		[Style::Formulae, Style::Casks].into_iter()
+		[Self::Formulae, Self::Casks].into_iter()
 	}
 
 	pub fn name(&self) -> &'static str {
 		match self {
-			Style::Formulae => "Formulae",
-			Style::Casks    => "Casks",
+			Self::Formulae => "Formulae",
+			Self::Casks    => "Casks",
 		}
 	}
 
 	pub fn option(&self) -> &'static str {
 		match self {
-			Style::Formulae => "--formulae",
-			Style::Casks    => "--casks",
+			Self::Formulae => "--formulae",
+			Self::Casks    => "--casks",
 		}
 	}
 }

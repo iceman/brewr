@@ -2,22 +2,20 @@ mod brew;
 pub mod config;
 pub mod system;
 mod table;
-use brew::Brew;
 use std::thread;
 
 const UP_TO_DATE: &str = "Already up-to-date.\n";
 
 /// - Prints new formulae, new casks, and outdated with descriptions
 pub fn print_output_with_new_item_desc() {
-	let update = Brew::cmd(&["update"]);
+	let update = brew::cmd(&["update"]);
 	let outdated_handle = thread::spawn(print_outdated_with_desc);
 
 	if update.stdout.contains(UP_TO_DATE) {
 		println!("{}", UP_TO_DATE);
 	} else {
-		let output = update.stderr(); // `brew update` outputs to stderr
-		Brew::map(move |_, style_name| {
-			print_new_items(&output, style_name);
+		brew::map(move |_, style_name| {
+			print_new_items(&update.stderr(), style_name); // `brew update` outputs list to stderr
 		});
 	};
 
@@ -26,11 +24,11 @@ pub fn print_output_with_new_item_desc() {
 
 /// Lists all installed items with description
 pub fn print_desc_for_all_installed() {
-	Brew::map(|style, style_name| {
+	brew::map(|style, style_name| {
 		println!(
 			"==> All {}\n{}\n",
 			style_name,
-			table::from_columns(Brew::list_with_desc(style).array())
+			table::from_columns(brew::list_with_desc(style).array())
 		);
 	});
 }
@@ -39,13 +37,13 @@ pub fn print_desc_for_all_installed() {
 pub fn print_desc_for_leaves() {
 	println!(
 		"==> Leaves\n{}\n",
-		table::from_columns(Brew::leaves_with_desc().array())
+		table::from_columns(brew::leaves_with_desc().array())
 	);
 }
 
 /// Prints a table of |name|version|desc| for outdated formulae
 fn print_outdated_with_desc() {
-	let outdated = Brew::outdated();
+	let outdated = brew::outdated();
 	if outdated.stdout.is_empty() {
 		return;
 	};
@@ -57,20 +55,20 @@ fn print_outdated_with_desc() {
 		table::from_columns([
 			&items,
 			&versions,
-			&Brew::cmd_with_items("desc", &items, "--eval-all").cols().1,
+			&brew::cmd_with_items("desc", &items, "--eval-all").cols().1,
 		])
 	);
 }
 
 /// Prints new items if found in output
-fn print_new_items(output: &str, style: &str) {
-	let search_str = format!("New {}\n", style);
+fn print_new_items(output: &str, style_name: &str) {
+	let search_str = format!("New {}\n", style_name);
 
 	if let Some(new_items) = extract_new_items(output, &search_str) {
 		println!(
 			"==> {}{}\n",
 			search_str,
-			table::from_columns(Brew::name_desc_homepage_array(&new_items))
+			table::from_columns(brew::name_desc_homepage_array(&new_items))
 		);
 	}
 }
