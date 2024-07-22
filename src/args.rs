@@ -16,3 +16,9 @@ pub struct Args {
 	#[arg(short, long)]
 	pub grid: bool,
 }
+
+impl Args {
+	pub fn get() -> Self {
+		Self::parse()
+	}
+}

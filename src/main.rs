@@ -4,11 +4,10 @@
 
 mod args;
 mod diagnostics;
-use args::{Args, Parser};
 use brewr::*;
 
 fn main() {
-	let args = Args::parse();
+	let args = args::Args::get();
 	config::insert("grid".to_string(), args.grid);
 
 	run_diagnostic();
