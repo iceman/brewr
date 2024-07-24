@@ -14,8 +14,9 @@ pub fn print_output_with_new_item_desc() {
 	if update.stdout.contains(UP_TO_DATE) {
 		println!("{}", UP_TO_DATE);
 	} else {
+		let update = update.stderr();
 		brew::map(move |_, style_name| {
-			print_new_items(&update.stderr(), style_name); // `brew update` outputs list to stderr
+			print_new_items(&update, style_name); // `brew update` outputs list to stderr
 		});
 	};
 
