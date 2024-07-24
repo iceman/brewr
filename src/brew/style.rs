@@ -4,7 +4,7 @@ pub enum Style {
 }
 
 impl Style {
-	pub fn iter() -> impl Iterator<Item = Style> {
+	pub fn iter() -> impl Iterator<Item = Self> {
 		[Self::Formulae, Self::Casks].into_iter()
 	}
 

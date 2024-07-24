@@ -8,7 +8,7 @@ const UP_TO_DATE: &str = "Already up-to-date.\n";
 
 /// - Prints new formulae, new casks, and outdated with descriptions
 pub fn print_output_with_new_item_desc() {
-	let update = brew::cmd(&["update"]);
+	let update = brew::command(&["update"]);
 	let outdated_handle = thread::spawn(print_outdated_with_desc);
 
 	if update.stdout.contains(UP_TO_DATE) {
@@ -55,7 +55,7 @@ fn print_outdated_with_desc() {
 		table::from_columns([
 			&items,
 			&versions,
-			&brew::cmd_with_items("desc", &items, "--eval-all").cols().1,
+			&brew::command_with_items("desc", &items, "--eval-all").cols().1,
 		])
 	);
 }

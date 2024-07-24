@@ -4,18 +4,18 @@ use crate::system::{self, Output, StreamsToString};
 use std::{sync::Arc, thread};
 use style::Style;
 
-// Public Constructors
-pub fn cmd(args: &[&str]) -> BrewResult {
-	BrewResult::new(system::execute("brew", args).unwrap())
+// Public Module Functions
+pub fn command(args: &[&str]) -> Brew {
+	Brew::new(system::execute("brew", args).unwrap())
 }
 
-pub fn cmd_with_items(cmd: &str, items: &[&str], args: &str) -> BrewResult {
-	self::cmd(&[&[cmd], items, &[args]].concat())
+pub fn command_with_items(cmd: &str, items: &[&str], args: &str) -> Brew {
+	command(&[&[cmd], items, &[args]].concat())
 }
 
 /// Sorted list of all outdated formulae and casks
-pub fn outdated() -> BrewResult {
-	BrewResult::new(
+pub fn outdated() -> Brew {
+	Brew::new(
 		system::pipe(&[
 				("bash",  &["-c", "cat <(brew outdated -v --formulae) <(brew outdated -v --casks)"]),
 				("sort",  &[]),
@@ -25,16 +25,15 @@ pub fn outdated() -> BrewResult {
 }
 
 /// Outputs name and description for all items of style
-pub fn list_with_desc(style: Style) -> BrewResult {
-	BrewResult::with_desc(&["list", "-1", style.option()], style)
+pub fn list_with_desc(style: Style) -> Brew {
+	Brew::with_desc(&["list", "-1", style.option()], style)
 }
 
 /// Outputs name and description for all leaves (formulae only)
-pub fn leaves_with_desc() -> BrewResult {
-	BrewResult::with_desc(&["leaves"], Style::Formulae)
+pub fn leaves_with_desc() -> Brew {
+	Brew::with_desc(&["leaves"], Style::Formulae)
 }
 
-// Public Module Functions
 /// Iterates through styles yielding the Enum and style name to a passed closure
 /// Executes each pass in a separate thread with atomic reference counting
 pub fn map<F>(func: F)
@@ -57,16 +56,17 @@ where
 
 /// Name, description, homepage from JSON data parse
 pub fn name_desc_homepage_array(items: &[&str]) -> [Vec<String>; 3] {
-	json::name_desc_homepage(items)
+	let bytes = command_with_items("info", items, "--json=v2").output.stdout;
+	json::name_desc_homepage(items.len(), bytes)
 }
 
-pub struct BrewResult {
+pub struct Brew {
 	pub stdout: String,
 	output: Output,
 }
 
 // Interface Methods
-impl BrewResult {
+impl Brew {
 	// Split brew's space/colon separated output into two columns
 	pub fn cols(&self) -> (Vec<&str>, Vec<&str>) {
 		self.stdout
@@ -85,7 +85,7 @@ impl BrewResult {
 }
 
 // Private Implementation
-impl BrewResult {
+impl Brew {
 	fn new(output: Output) -> Self {
 		let stdout = output.stdout_string();
 		Self { stdout, output }
@@ -93,13 +93,13 @@ impl BrewResult {
 
 	/// Takes brew command args to first generate a list of names, then calls brew again with list to get names and descriptions
 	fn with_desc(args: &[&str], style: Style) -> Self {
-		let desc_cmd = format!(r#"brew desc "${{0}}" "${{@}}" --eval-all {}"#, style.option());
+		let desc_command = format!(r#"brew desc "${{0}}" "${{@}}" --eval-all {}"#, style.option());
 		
 		Self::new(
 			system::pipe(&[
 					("brew",  args),
 					("tr", 	  &["\n", " "]),
-					("xargs", &["bash", "-c", &desc_cmd]),
+					("xargs", &["bash", "-c", &desc_command]),
 			])
 			.unwrap()
 		)
