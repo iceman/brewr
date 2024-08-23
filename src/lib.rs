@@ -14,9 +14,9 @@ pub fn print_output_with_new_item_desc() {
 	if update.stdout.contains(UP_TO_DATE) {
 		println!("{}", UP_TO_DATE);
 	} else {
-		let update = update.stderr();
-		brew::map(move |_, style_name| {
-			print_new_items(&update, style_name); // `brew update` outputs list to stderr
+		let update = update.stderr(); // `brew update` outputs list to stderr
+		brew::each(move |style| {
+			print_new_items(&update, style.name());
 		});
 	};
 
@@ -25,10 +25,10 @@ pub fn print_output_with_new_item_desc() {
 
 /// Lists all installed items with description
 pub fn print_desc_for_all_installed() {
-	brew::map(|style, style_name| {
+	brew::each(|style| {
 		println!(
 			"==> All {}\n{}\n",
-			style_name,
+			style.name(),
 			table::from_columns(brew::list_with_desc(style).array())
 		);
 	});

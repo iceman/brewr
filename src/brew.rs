@@ -4,7 +4,7 @@ use crate::system::{self, Output, StreamsToString};
 use std::{sync::Arc, thread};
 use style::Style;
 
-// Public Module Functions
+// Module Interface
 pub fn command(args: &[&str]) -> Brew {
 	Brew::new(system::execute("brew", args).unwrap())
 }
@@ -34,19 +34,18 @@ pub fn leaves_with_desc() -> Brew {
 	Brew::with_desc(&["leaves"], Style::Formulae)
 }
 
-/// Iterates through styles yielding the Enum and style name to a passed closure
+/// Iterates through styles yielding to a passed closure
 /// Executes each pass in a separate thread with atomic reference counting
-pub fn map<F>(func: F)
+pub fn each<F>(func: F)
 where
-	F: Fn(Style, &str) + Send + 'static + Sync,
+	F: Fn(Style) + Send + 'static + Sync,
 {
 	let func = Arc::new(func);
 	let handles = Style::iter()
 		.map(|style| {
 			let func = Arc::clone(&func);
 			thread::spawn(move || {
-				let name = style.name();
-				func(style, name);
+				func(style);
 			})
 		})
 		.collect::<Vec<_>>();
@@ -65,7 +64,7 @@ pub struct Brew {
 	output: Output,
 }
 
-// Interface Methods
+// Public Methods
 impl Brew {
 	// Split brew's space/colon separated output into two columns
 	pub fn cols(&self) -> (Vec<&str>, Vec<&str>) {
@@ -84,7 +83,7 @@ impl Brew {
 	}
 }
 
-// Private Implementation
+// Private Constructors
 impl Brew {
 	fn new(output: Output) -> Self {
 		let stdout = output.stdout_string();

@@ -2,12 +2,12 @@
 //!
 //! A command line utility to improve interaction with brew
 
-mod args;
+mod command_line;
 mod diagnostics;
 use brewr::*;
 
 fn main() {
-	let args = args::Args::get();
+	let args = command_line::Args::get();
 	config::insert("grid".to_string(), args.grid);
 
 	run_diagnostic();
