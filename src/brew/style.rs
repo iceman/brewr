@@ -21,4 +21,11 @@ impl Style {
 			Self::Casks    => "--casks",
 		}
 	}
+	
+	pub fn new_title(&self) -> &'static str {
+		match self {
+			Self::Formulae => "New Formulae\n",
+			Self::Casks    => "New Casks\n",
+		}
+	}
 }
