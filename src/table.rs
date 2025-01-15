@@ -11,7 +11,7 @@ where
 	I: AsRef<[S]>,
 	S: AsRef<str>,
 {
-	let style = match config::get("grid".to_string()) {
+	let style = match config::get(config::GRID) {
 		true => Theme::from(Style::modern()),
 		_	 => Theme::from(Style::blank()),
 	};

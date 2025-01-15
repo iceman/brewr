@@ -8,7 +8,7 @@ use brewr::*;
 
 fn main() {
 	let args = command_line::Args::get();
-	config::insert("grid".to_string(), args.grid);
+	config::insert(config::GRID, args.grid);
 
 	run_diagnostic();
 
