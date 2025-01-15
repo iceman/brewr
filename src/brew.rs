@@ -53,9 +53,7 @@ where
 	let handles = Style::iter()
 		.map(|style| {
 			let func = Arc::clone(&func);
-			thread::spawn(move || {
-				func(style);
-			})
+			thread::spawn(move || func(style))
 		})
 		.collect::<Vec<_>>();
 

@@ -46,7 +46,7 @@ impl BrewResult {
 	pub(super) fn new(output: Output) -> Self {
 		let stdout = output.stdout_string();
 		let stderr = String::new();
-		Self { stdout, stderr, output }
+		Self {stdout, stderr, output}
 	}
 
 	/// Takes brew command args to first generate a list of names, then calls brew again with list to get names and descriptions
@@ -70,10 +70,8 @@ mod tests {
 	
 	#[test]
 	fn processing_test() {
-		let test_line = "homebrew/cask).\n==> New Formulae\nform1\nform2\n==> New Casks\ncask1\ncask2\n==> Outdated Formulae\naugeas\nawscli\ncjson\ncmake\ndav1d\n".to_string();
-
 		let mut brew_test = command(&["-h"]);
-		brew_test.stderr = test_line;
+		brew_test.stderr = "homebrew/cask).\n==> New Formulae\nform1\nform2\n==> New Casks\ncask1\ncask2\n==> Outdated Formulae\nabcd\n".to_string();
 
 		let new_items = brew_test.extract_new_items(&Style::Formulae).unwrap();
 		assert_eq!(new_items, vec!["form1", "form2"]);
