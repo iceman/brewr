@@ -13,7 +13,7 @@ impl BrewResult {
 	pub fn extract_new_items<'a>(&'a self, style: &Style) -> Option<Vec<&'a str>> {
 		Some(
 			self.stderr
-				.split_once(style.new_title())?.1
+				.split_once(style.title())?.1
 				.split_once("\n==>")?.0
 				.lines()
 				.collect()

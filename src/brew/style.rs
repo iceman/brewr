@@ -5,7 +5,10 @@ pub enum Style {
 
 impl Style {
 	pub fn iter() -> impl Iterator<Item = Self> {
-		[Self::Formulae, Self::Casks].into_iter()
+		[
+			Self::Formulae,
+			Self::Casks,
+		].into_iter()
 	}
 
 	pub fn name(&self) -> &'static str {
@@ -22,7 +25,7 @@ impl Style {
 		}
 	}
 	
-	pub fn new_title(&self) -> &'static str {
+	pub fn title(&self) -> &'static str {
 		match self {
 			Self::Formulae => "New Formulae\n",
 			Self::Casks    => "New Casks\n",

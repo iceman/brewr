@@ -14,7 +14,7 @@ pub fn print_output_with_new_item_desc() {
 			if let Some(new_items) = update.extract_new_items(&style) {
 				println!(
 					"==> {}{}\n",
-					style.new_title(),
+					style.title(),
 					table::from_columns(brew::name_desc_homepage_array(&new_items))
 				);
 			}
