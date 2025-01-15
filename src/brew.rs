@@ -2,27 +2,29 @@ mod json;
 mod result;
 mod style;
 use crate::system::{self, StreamsToString};
-use result::BrewResult;
+use result::BrewResult as Brew;
 use std::{sync::Arc, thread};
 use style::Style;
 
-pub fn command(args: &[&str]) -> BrewResult {
-	BrewResult::new(system::execute("brew", args).unwrap())
+pub fn command(args: &[&str]) -> Brew {
+	let output = system::execute("brew", args).unwrap();
+	Brew::new(output)
 }
 
-pub fn command_with_items(cmd: &str, items: &[&str], args: &str) -> BrewResult {
-	command(&[&[cmd], items, &[args]].concat())
+pub fn command_with_items(cmd: &str, items: &[&str], args: &str) -> Brew {
+	let args = &[&[cmd], items, &[args]].concat();
+	command(args)
 }
 
-pub fn update() -> BrewResult {
+pub fn update() -> Brew {
 	let mut update = command(&["update"]);
 	update.stderr = update.output.stderr_string();
 	update
 }
 
 /// Sorted list of all outdated formulae and casks
-pub fn outdated() -> BrewResult {
-	BrewResult::new(
+pub fn outdated() -> Brew {
+	Brew::new(
 		system::pipe(&[
 				("bash",  &["-c", "cat <(brew outdated -v --formulae) <(brew outdated -v --casks)"]),
 				("sort",  &[]),
@@ -32,13 +34,13 @@ pub fn outdated() -> BrewResult {
 }
 
 /// Outputs name and description for all items of style
-pub fn list_with_desc(style: Style) -> BrewResult {
-	BrewResult::with_desc(&["list", "-1", style.option()], style)
+pub fn list_with_desc(style: Style) -> Brew {
+	Brew::with_desc(&["list", "-1", style.option()], style)
 }
 
 /// Outputs name and description for all leaves (formulae only)
-pub fn leaves_with_desc() -> BrewResult {
-	BrewResult::with_desc(&["leaves"], Style::Formulae)
+pub fn leaves_with_desc() -> Brew {
+	Brew::with_desc(&["leaves"], Style::Formulae)
 }
 
 /// Iterates through styles yielding to a passed closure
