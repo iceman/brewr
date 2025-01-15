@@ -10,7 +10,7 @@ pub fn print_output_with_new_item_desc() {
 	let outdated_handle = thread::spawn(print_outdated_with_desc);
 
 	if update.contains_new_items() {
-		brew::each(move |style| {
+		brew::each_style(move |style| {
 			if let Some(new_items) = update.extract_new_items(&style) {
 				println!(
 					"==> {}{}\n",
@@ -43,7 +43,7 @@ fn print_outdated_with_desc() {
 
 /// Lists all installed items with description
 pub fn print_desc_for_all_installed() {
-	brew::each(|style| {
+	brew::each_style(|style| {
 		println!(
 			"==> All {}\n{}\n",
 			style.name(),

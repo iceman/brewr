@@ -44,8 +44,8 @@ pub fn leaves_with_desc() -> Brew {
 }
 
 /// Iterates through styles yielding to a passed closure
-/// Executes each pass in a separate thread with atomic reference counting
-pub fn each<F>(func: F)
+/// Executes each func(style) in a separate thread with atomic reference counting
+pub fn each_style<F>(func: F)
 where
 	F: Fn(Style) + Send + 'static + Sync,
 {
