@@ -12,7 +12,7 @@ pub fn insert(k: &str, v: bool) {
 	settings()
 		.lock()
 		.expect("Failed to lock settings mutex")
-		.insert(k.to_string(), v);
+		.insert(k.to_owned(), v);
 }
 
 pub fn get(k: &str) -> bool {

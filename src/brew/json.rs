@@ -19,7 +19,7 @@ impl Item {
 			Name::Formulae(s) => s,
 			Name::Casks(v) => &v[0],
 		}
-		.to_string()
+		.to_owned()
 	}
 }
 

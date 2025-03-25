@@ -75,7 +75,7 @@ mod tests {
 	fn processing_test() {
 		let mut brew_test = command(&["-h"]);
 		brew_test.stderr = Some(
-			"homebrew/cask).\n==> New Formulae\nform1\nform2\n==> New Casks\ncask1\ncask2\n==> Outdated Formulae\nabcd\n".to_string()
+			"homebrew/cask).\n==> New Formulae\nform1\nform2\n==> New Casks\ncask1\ncask2\n==> Outdated Formulae\nabcd\n".to_owned()
 		);
 
 		let new_items = brew_test.extract_new_items(&Style::Formulae).unwrap();
