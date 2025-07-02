@@ -1,7 +1,7 @@
 pub fn error_if_not_in_path(cmds: &[&str]) {
 	for cmd in cmds {
 		if !command_in_path(cmd) {
-			eprintln!("{} command not found.", cmd);
+			eprintln!("{cmd} command not found.");
 			std::process::exit(1);
 		}
 	}
