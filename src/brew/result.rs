@@ -17,7 +17,7 @@ impl BrewResult {
 				.split_once(style.title())?.1
 				.split_once("\n==>")?.0
 				.lines()
-				.map(|line| line.split_once(':').unwrap().0)
+				.map(|line| line.split_once(':').map(|(before, _)| before).unwrap_or(line))
 				.collect()
 		)
 	}
