@@ -1,31 +1,28 @@
-pub enum Style {
+pub(super) enum Category {
 	Formulae,
 	Casks,
 }
 
-impl Style {
-	pub fn iter() -> impl Iterator<Item = Self> {
-		[
-			Self::Formulae,
-			Self::Casks,
-		].into_iter()
+impl Category {
+	pub(super) fn all() -> [Self; 2] {
+		[Self::Formulae, Self::Casks]
 	}
 
-	pub fn name(&self) -> &'static str {
+	pub(super) fn name(&self) -> &'static str {
 		match self {
 			Self::Formulae => "Formulae",
 			Self::Casks    => "Casks",
 		}
 	}
 
-	pub fn option(&self) -> &'static str {
+	pub(super) fn option(&self) -> &'static str {
 		match self {
 			Self::Formulae => "--formulae",
 			Self::Casks    => "--casks",
 		}
 	}
 	
-	pub fn title(&self) -> &'static str {
+	pub(super) fn title(&self) -> &'static str {
 		match self {
 			Self::Formulae => "New Formulae\n",
 			Self::Casks    => "New Casks\n",

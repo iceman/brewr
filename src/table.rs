@@ -1,21 +1,19 @@
-use crate::config;
+mod style;
+
 use tabled::{
 	builder::Builder,
-	settings::{themes::Theme, Padding, Style},
+	settings::Padding,
 };
 
+pub use style::Style;
+
 /// Build a table from slice, array or vector
-pub fn from_columns<O, I, S>(columns: O) -> String
+pub fn from_columns<O, I, S>(columns: O, style: Style) -> String
 where
 	O: AsRef<[I]>,
 	I: AsRef<[S]>,
 	S: AsRef<str>,
 {
-	let style = match config::get(config::GRID) {
-		true => Theme::from(Style::modern()),
-		_	 => Theme::from(Style::blank()),
-	};
-
 	let columns = columns.as_ref(); // convert to slice of cols
 	let row_len = columns[0].as_ref().len();
 
@@ -33,6 +31,6 @@ where
 	builder
 		.build()
 		.with(Padding::new(0, 4, 0, 0))
-		.with(style)
+		.with(style.theme())
 		.to_string()
 }

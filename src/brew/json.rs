@@ -1,5 +1,7 @@
 use serde::Deserialize;
 
+use super::system;
+
 #[derive(Deserialize)]
 struct Data {
 	formulae: Vec<Item>,
@@ -30,10 +32,11 @@ enum Name {
 	Casks(Vec<String>),
 }
 
-pub fn name_desc_homepage(size: usize, bytes: Vec<u8>) -> [Vec<String>; 3] {
-	let result = serde_json::from_slice(&bytes);
-	match result {
-		Ok(d) => vectorize_json_data(size, d),
+/// Name, description, homepage from JSON data parse
+pub(super) fn name_desc_homepage_array(items: &[&str]) -> [Vec<String>; 3] {
+	let output = system::execute_with_items("info", items, "--json=v2");
+	match serde_json::from_slice(&output.stdout) {
+		Ok(d)  => vectorize_json_data(items.len(), d),
 		Err(e) => [
 			vec![e.to_string()],
 			vec![String::new()],
