@@ -8,18 +8,11 @@ pub(super) struct Subcommand {
 }
 
 impl Subcommand {
-	fn run(args: &[&str]) -> Self {
-		let output = system::execute(args);
-		Self {
-			result: output.stdout_string()
-		}
-	}
-	
-	pub(super) fn run_with_items(sub_cmd: &str, items: &[&str], args: &str) -> Self {
-		let output = system::execute_with_items(sub_cmd, items, args);
-		Self {
-			result: output.stdout_string()
-		}
+	// constructors
+	pub(super) fn update() -> Self {
+		Self::stderr(
+			system::execute(&["update"])
+		)
 	}
 	
 	pub(super) fn desc(items: &[&str], category: Option<Category>) -> Self {
@@ -29,33 +22,55 @@ impl Subcommand {
 		}
 	}
 	
-	pub(super) fn update() -> Self {
-		Self {
-			result: system::execute(&["update"]).stderr_string()
-		}
-	}
-	
-	/// Sorted list of all outdated formulae and casks
+	/// Sorted list of all outdated formulae and casks w/ parallel iterator
 	pub(super) fn outdated() -> Self {
-		let result = Category::all().into_par_iter().map(|category| {
+		Self::stdout(
+			Category::all().into_par_iter().map(|category| {
 				Self::run(&["outdated", "-v", category.option()]).result
 			})
-			.collect();
-		Self { result }
+			.collect::<String>()
+		)
 	}
 	
-	/// Outputs name and description for all items of style
+	/// Outputs name and description for all items of category
 	pub(super) fn list_with_desc(category: Category) -> Self {
-		let list = Subcommand::run(&["list", "-1", category.option()]);
-		Subcommand::desc(&list.itemize(), Some(category))
+		let list = Self::run(&["list", "-1", category.option()]);
+		Self::desc(&list.itemize(), Some(category))
 	}
 	
 	/// Outputs name and description for all leaves (formulae only)
 	pub(super) fn leaves_with_desc() -> Self {
-		let list = Subcommand::run(&["leaves"]);
-		Subcommand::desc(&list.itemize(), None)
+		let list = Self::run(&["leaves"]);
+		Self::desc(&list.itemize(), None)
 	}
-		
+	
+	fn run(args: &[&str]) -> Self {
+		Self::stdout(
+			system::execute(args)
+		)
+	}
+	
+	fn run_with_items(sub_cmd: &str, items: &[&str], args: &str) -> Self {
+		Self::stdout(
+			system::execute_with_items(sub_cmd, items, args)
+		)
+	}
+	
+	fn stdout<T: OutputToString>(output: T) -> Self {
+		Self {
+			result: output.stdout_string()
+		}
+	}
+	
+	fn stderr<T: OutputToString>(output: T) -> Self {
+		Self {
+			result: output.stderr_string()
+		}
+	}
+}
+
+impl Subcommand {
+	// behavior
 	/// Isolates item list between two string markers
 	pub(super) fn extract_new_items<'a>(&'a self, category: &Category) -> Option<Vec<&'a str>> {
 		Some(
@@ -68,12 +83,6 @@ impl Subcommand {
 		)
 	}
 	
-	fn cols_iter(&self) -> impl Iterator<Item = (&str, &str)> + '_ {
-		self.result
-			.lines()
-			.map(|l| l.split_once([' ', ':']).unwrap())
-	}
-	
 	/// Split brew's space/colon separated output into two columns
 	pub(super) fn cols(&self) -> (Vec<&str>, Vec<&str>) {
 		self.cols_iter().unzip()
@@ -83,6 +92,12 @@ impl Subcommand {
 		let mut pairs: Vec<(&str, &str)> = self.cols_iter().collect();
 		pairs.sort_by_key(|(first, _)| *first);
 		pairs.into_iter().unzip()
+	}
+	
+	fn cols_iter(&self) -> impl Iterator<Item = (&str, &str)> + '_ {
+		self.result
+			.lines()
+			.map(|l| l.split_once([' ', ':']).unwrap())
 	}
 	
 	pub(super) fn array(&self) -> [Vec<&str>; 2] {

@@ -16,18 +16,23 @@ pub(super) fn execute_with_items(sub_cmd: &str, items: &[&str], args: &str) -> O
 		.unwrap()
 }
 
-/// Default Output methods to convert Std Streams to String
+/// Convenience Type to always output String from Std Streams/String
 pub(super) trait OutputToString {
-	fn stdout_string(&self) -> String;
-	fn stderr_string(&self) -> String;
+	fn stdout_string(self) -> String;
+	fn stderr_string(self) -> String;
+}
+
+impl OutputToString for String {
+	fn stdout_string(self) -> String { self }
+	fn stderr_string(self) -> String { self }
 }
 
 impl OutputToString for Output {
-	fn stdout_string(&self) -> String {
+	fn stdout_string(self) -> String {
 		bytes_to_string(&self.stdout)
 	}
 
-	fn stderr_string(&self) -> String {
+	fn stderr_string(self) -> String {
 		bytes_to_string(&self.stderr)
 	}
 }
