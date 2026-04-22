@@ -20,7 +20,7 @@ impl Brew {
 				SpecialMode::Leaves => self.print_desc_for_leaves(),
 			}
 		} else {
-			self.print_output_with_new_item_desc()
+			self.print_outdated_with_new_item_desc()
 		}
 	}
 }
