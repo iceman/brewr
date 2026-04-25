@@ -1,6 +1,5 @@
 use rayon::prelude::*;
 
-use crate::table;
 use super::{Brew, Category, json, Subcommand};
 
 impl Brew {
@@ -16,26 +15,25 @@ impl Brew {
 				self.print_new_items(update)
 			},
 			|| {
-				if outdated.contains_results() {
-					let (items, versions) = outdated.sorted_cols();
-					let desc = Subcommand::desc(&items, None);
-					Some((items, versions, desc))
-				} else {
-					None
-				}
+				outdated.contains_results().then(
+					|| {
+						let (items, versions) = outdated.sorted_cols();
+						let desc = Subcommand::desc(&items, None);
+						(items, versions, desc)
+					}
+				)
 			},
 		);
 		
 		if let Some((items, versions, desc)) = outdated_columns {			
 			println!(
 				"==> Outdated\n{}\n",
-				table::from_columns(
+				self.table.from_columns(
 				[
 					&items,
 					&versions,
 					&desc.cols().1
-				],
-				self.params.style
+				]
 				)
 			);
 		};
@@ -48,7 +46,7 @@ impl Brew {
 					println!(
 						"==> {}{}\n",
 						category.title(),
-						table::from_columns(json::name_desc_homepage_array(&new_items), self.params.style)
+						self.table.from_columns(json::name_desc_homepage_array(&new_items))
 					);
 				}
 			});
@@ -61,10 +59,7 @@ impl Brew {
 			println!(
 				"\n==> All {}\n{}\n",
 				category.name(),
-				table::from_columns(
-					Subcommand::list_with_desc(category).array(),
-					self.params.style
-				)
+				self.table.from_columns(Subcommand::list_with_desc(category).array())
 			);
 		});
 	}
@@ -73,10 +68,7 @@ impl Brew {
 	pub(super) fn print_desc_for_leaves(&self) {
 		println!(
 			"\n==> Leaves\n{}\n",
-			table::from_columns(
-				Subcommand::leaves_with_desc().array(),
-				self.params.style
-			)
+			self.table.from_columns(Subcommand::leaves_with_desc().array())
 		);
 	}
 }

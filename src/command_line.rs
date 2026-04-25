@@ -1,6 +1,6 @@
 use clap::Parser;
 
-use super::{Params, Style};
+use super::{SpecialMode, Style};
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -19,7 +19,16 @@ pub struct Args {
 	pub style: Style,
 }
 
-pub fn params() -> Params {
+pub fn parse() -> (Option<SpecialMode>, Style) {
 	let Args { all, leaves, style } = Args::parse();
-	Params::new(all, leaves, style)
+	
+	let special_mode = if all {
+		Some(SpecialMode::All)
+	} else if leaves {
+		Some(SpecialMode::Leaves)
+	} else {
+		None
+	};
+		
+	(special_mode, style)
 }
