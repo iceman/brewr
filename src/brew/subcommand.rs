@@ -1,4 +1,5 @@
 use rayon::prelude::*;
+use std::collections::HashMap;
 
 use super::Category;
 use super::system::{self, OutputToString};
@@ -15,11 +16,28 @@ impl Subcommand {
 		)
 	}
 	
-	pub(super) fn desc(items: &[&str], category: Option<Category>) -> Self {
-		match category {
-			None => Self::run_with_items("desc", items, "--eval-all"),
-			Some(cat) => Self::run_with_items("desc", items, cat.option()),
+	pub(super) fn desc(items: &[&str]) -> Self {
+		let output_string = system::execute_with_items("desc", items, None).stdout_string();
+		
+		Self {
+			result: Self::align_desc(items, &output_string)
 		}
+	}
+	
+	fn align_desc(items: &[&str], output: &str) -> String {
+		let mut descs = HashMap::new();
+		
+		for line in output.lines() {
+			if let Some((name, _)) = line.split_once(':') {
+				descs.insert(name, line);
+			}
+		}
+		
+		items
+			.iter()
+			.map(|name| descs.get(name).copied().unwrap_or(""))
+			.collect::<Vec<_>>()
+			.join(":\n")
 	}
 	
 	/// Sorted list of all outdated formulae and casks w/ parallel iterator
@@ -35,24 +53,18 @@ impl Subcommand {
 	/// Outputs name and description for all items of category
 	pub(super) fn list_with_desc(category: Category) -> Self {
 		let list = Self::run(&["list", "-1", category.option()]);
-		Self::desc(&list.itemize(), Some(category))
+		Self::desc(&list.itemize())
 	}
 	
 	/// Outputs name and description for all leaves (formulae only)
 	pub(super) fn leaves_with_desc() -> Self {
 		let list = Self::run(&["leaves"]);
-		Self::desc(&list.itemize(), None)
+		Self::desc(&list.itemize())
 	}
 	
 	fn run(args: &[&str]) -> Self {
 		Self::stdout(
 			system::execute(args)
-		)
-	}
-	
-	fn run_with_items(sub_cmd: &str, items: &[&str], args: &str) -> Self {
-		Self::stdout(
-			system::execute_with_items(sub_cmd, items, args)
 		)
 	}
 	

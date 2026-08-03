@@ -7,13 +7,15 @@ pub(super) fn execute(args: &[&str]) -> Output {
 		.unwrap()
 }
 
-pub(super) fn execute_with_items(sub_cmd: &str, items: &[&str], args: &str) -> Output {
-	Command::new("brew")
-		.arg(sub_cmd)
-		.args(items)
-		.arg(args)
-		.output()
-		.unwrap()
+pub(super) fn execute_with_items(sub_cmd: &str, items: &[&str], args: Option<&str>) -> Output {
+	let mut cmd = Command::new("brew");
+		cmd.arg(sub_cmd).args(items);
+		
+		if let Some(a) = args {
+			cmd.arg(a);
+		}
+		
+		cmd.output().unwrap()
 }
 
 /// Convenience Type to always output String from Std Streams/String

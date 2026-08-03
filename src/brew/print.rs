@@ -18,7 +18,7 @@ impl Brew {
 				outdated.contains_results().then(
 					|| {
 						let (items, versions) = outdated.sorted_cols();
-						let desc = Subcommand::desc(&items, None);
+						let desc = Subcommand::desc(&items);
 						(items, versions, desc)
 					}
 				)

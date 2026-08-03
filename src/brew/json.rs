@@ -34,7 +34,7 @@ enum Name {
 
 /// Name, description, homepage from JSON data parse
 pub(super) fn name_desc_homepage_array(items: &[&str]) -> [Vec<String>; 3] {
-	let output = system::execute_with_items("info", items, "--json=v2");
+	let output = system::execute_with_items("info", items, Some("--json=v2"));
 	match serde_json::from_slice(&output.stdout) {
 		Ok(d)  => vectorize_json_data(items.len(), d),
 		Err(e) => [

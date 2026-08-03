@@ -23,9 +23,9 @@ impl Table {
 	{
 		let columns = columns.as_ref(); // convert to slice of cols
 		let row_len = columns[0].as_ref().len();
-	
+		
 		let mut builder = Builder::with_capacity(row_len, columns.len());
-	
+		
 		for i in 0..row_len {
 			builder.push_record(
 				columns
@@ -34,7 +34,7 @@ impl Table {
 					.collect::<Vec<&str>>(),
 			);
 		}
-	
+		
 		builder
 			.build()
 			.with(Padding::new(0, 4, 0, 0))
